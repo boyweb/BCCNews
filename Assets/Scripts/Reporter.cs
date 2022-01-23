@@ -1,6 +1,4 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -32,7 +30,7 @@ public class Reporter : MonoBehaviour
         Announcement.Instance.Show(
             "主编的信息",
             "我们收到了你的入职申请，但是BCC News是全世界新闻人都想来的地方。\n想要加入BCC，你必须证明你自己。\n现在有2个任务交给你：发表一篇有关强制劳动的新闻报道，以及一篇打击当地民心的新闻报道。\n我们讲究真实，所以你的所有素材来源必须来自于实地采访，这样才有可信度。\n至于如何用真实的素材写出我们需要的新闻，你需要好好思考。\n如果你能完成任务，那么你就掌握了BCC记者的基本技能。\n祝你成功！",
-            () => { CanMove = true; });
+            () => { guide.DOAnchorPosY(0, 0.1f); });
     }
 
     private void Start()
@@ -129,4 +127,37 @@ public class Reporter : MonoBehaviour
     {
         StartCoroutine(WinProcess());
     }
+
+    private IEnumerator ExitProcess()
+    {
+        Report.Instance.Hide();
+        CanMove = false;
+        Cover.Instance.Show();
+        yield return new WaitForSeconds(1);
+        SceneManager.LoadScene("Logo");
+    }
+
+    public void Exit()
+    {
+        if (!CanMove) return;
+        StartCoroutine(ExitProcess());
+    }
+
+    #region Guide
+
+    [SerializeField] private RectTransform guide;
+
+    public void CloseGuide()
+    {
+        guide.DOAnchorPosY(-1080, 0.1f).OnComplete(() => { CanMove = true; });
+    }
+
+    public void ShowGuide()
+    {
+        if (!CanMove) return;
+        CanMove = false;
+        guide.DOAnchorPosY(0, 0.1f);
+    }
+
+    #endregion
 }
